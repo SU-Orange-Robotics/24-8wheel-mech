@@ -17,11 +17,11 @@ competition Competition;
 // define your global instances of motors and other devices here
 
 // 8 motor 4 WHEEL mechanum drive
-motor frontLeftA(PORT17, gearSetting::ratio6_1, false);
-motor frontLeftB(PORT3, gearSetting::ratio6_1, false);
-motor frontRightA(PORT21, gearSetting::ratio6_1, true);
-motor frontRightB(PORT8, gearSetting::ratio6_1, true);
-motor backLeftA(PORT10, gearSetting::ratio6_1, false);
+motor frontLeftA(PORT2, gearSetting::ratio6_1, false);
+motor frontLeftB(PORT3, gearSetting::ratio6_1, false); //doesn't work due to mechanical issue
+motor frontRightA(PORT9, gearSetting::ratio6_1, true);
+motor frontRightB(PORT10, gearSetting::ratio6_1, true);
+motor backLeftA(PORT19, gearSetting::ratio6_1, false);
 motor backLeftB(PORT20, gearSetting::ratio6_1, false);
 motor backRightA(PORT6, gearSetting::ratio6_1, true);
 motor backRightB(PORT5, gearSetting::ratio6_1, true);
@@ -105,19 +105,23 @@ static void drive(double y, double x, double theta) {
     theta *= 100;
 
     //if (x + y + theta >= 3) {
-    frontLeftA.spin(directionType::fwd, -y - x - theta, velocityUnits::pct);
-    frontLeftB.spin(directionType::fwd, -y - x - theta, velocityUnits::pct);
+
+    //some of these +'s and -'s will need to be changed when the wheels are flipped around
+    frontLeftA.spin(directionType::fwd, y + x + theta, velocityUnits::pct); 
+    frontLeftB.spin(directionType::fwd, y + x + theta, velocityUnits::pct);
 
     backRightA.spin(directionType::fwd,  y + x - theta, velocityUnits::pct);
     backRightB.spin(directionType::fwd,  y + x - theta, velocityUnits::pct);
 
-    frontRightA.spin(directionType::fwd, -y + x + theta, velocityUnits::pct);
-    frontRightB.spin(directionType::fwd, -y + x + theta, velocityUnits::pct);
+    frontRightA.spin(directionType::fwd, y - x - theta, velocityUnits::pct);
+    frontRightB.spin(directionType::fwd, y - x - theta, velocityUnits::pct);
 
     backLeftA.spin(directionType::fwd,  y - x + theta, velocityUnits::pct);
     backLeftB.spin(directionType::fwd,  y - x + theta, velocityUnits::pct);
     //}
   }
+
+
 int main() {
   // Set up callbacks for autonomous and driver control periods.
   Competition.autonomous(autonomous);
