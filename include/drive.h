@@ -1,6 +1,7 @@
 #include "vex.h"
-#include "math.h"
-#include "robot-config.h"
+#include <math.h>
+
+#pragma once
 
 class Drive {
         
@@ -38,8 +39,6 @@ class Drive {
             relativeDrive = relativeDrive ? false : true;
         }
 
-        void resetHeading() {
-            originHeading = IMU.heading();
-        }
+        void resetHeading();
 
 };

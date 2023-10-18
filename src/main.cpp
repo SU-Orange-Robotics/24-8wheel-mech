@@ -13,10 +13,6 @@
 
 using namespace vex;
 
-// declare object-oriented stuff here
-Drive drive;
-
-
 /*---------------------------------------------------------------------------*/
 /*                          Pre-Autonomous Functions                         */
 /*                                                                           */

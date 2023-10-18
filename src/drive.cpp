@@ -4,10 +4,11 @@
 
 using namespace vex;
 
-
 Drive::Drive() {    
     originCorr = 0;
     originHeading = IMU.heading();
+    invertDrive = false;
+    relativeDrive = true;
 }
 
 void Drive::drive(double y, double x, double theta) {
@@ -32,9 +33,9 @@ void Drive::drive(double y, double x, double theta) {
 }
 
 void Drive::inputAdjust(double &fwd, double &str, double &theta) {
-    fwd *= abs(fwd) < deadzone ? 0.0 : 1.0;
-    str *= abs(str) < deadzone ? 0.0 : 1.0;
-    theta *= abs(theta) < deadzone ? 0.0 : 1.0;
+    fwd *= fabs(fwd) < deadzone ? 0.0 : 1.0;
+    str *= fabs(str) < deadzone ? 0.0 : 1.0;
+    theta *= fabs(theta) < deadzone ? 0.0 : 1.0;
     
     fwd /= 100;
     str /= 100;
@@ -68,4 +69,8 @@ void Drive::fieldRelativize(double &fwd, double &str, double &theta) {
         fwd = temp;
     }
     
+}
+
+void Drive::resetHeading() {
+    originHeading = IMU.heading();
 }
