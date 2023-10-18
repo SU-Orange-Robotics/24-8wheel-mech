@@ -8,25 +8,14 @@
 /*----------------------------------------------------------------------------*/
 
 #include "vex.h"
+#include "drive.h"
+#include "robot-config.h"
 
 using namespace vex;
 
-// A global instance of competition
-competition Competition;
+// declare object-oriented stuff here
+Drive drive;
 
-// define your global instances of motors and other devices here
-
-// 8 motor 4 WHEEL mechanum drive
-motor frontLeftA(PORT2, gearSetting::ratio6_1, false);
-motor frontLeftB(PORT3, gearSetting::ratio6_1, false); //doesn't work due to mechanical issue
-motor frontRightA(PORT9, gearSetting::ratio6_1, true);
-motor frontRightB(PORT10, gearSetting::ratio6_1, true);
-motor backLeftA(PORT19, gearSetting::ratio6_1, false);
-motor backLeftB(PORT20, gearSetting::ratio6_1, false);
-motor backRightA(PORT6, gearSetting::ratio6_1, true);
-motor backRightB(PORT5, gearSetting::ratio6_1, true);
-
-controller Controller1(controllerType::primary);
 
 /*---------------------------------------------------------------------------*/
 /*                          Pre-Autonomous Functions                         */
@@ -42,6 +31,8 @@ void pre_auton(void) {
 
   // All activities that occur before the competition starts
   // Example: clearing encoders, setting servo positions, ...
+  IMU.calibrate();
+
 }
 
 /*---------------------------------------------------------------------------*/
@@ -81,6 +72,9 @@ void usercontrol(void) {
     // Insert user code here. This is where you use the joystick values to
     // update your motors, etc.
     // ........................................................................
+    // 8 motor 4 WHEEL mechanum drive
+    drive.drive(Controller1.Axis3.value(), Controller1.Axis4.value(), Controller1.Axis1.value());
+
 
     wait(20, msec); // Sleep the task for a short amount of time to
                     // prevent wasted resources.
@@ -90,36 +84,6 @@ void usercontrol(void) {
 //
 // Main will set up the competition functions and callbacks.
 //
-
-static void drive(double y, double x, double theta) {
-    x /= 100;
-    y /= 100;
-    theta /= 100;
-    
-    x = pow(x, 2) * ((x > 0) ? 1 : -1);
-    y = pow(y, 2) * ((y > 0) ? 1 : -1);
-    theta = pow(theta, 2) * ((theta > 0) ? 1 : -1);
-
-    x *= 100;
-    y *= 100;
-    theta *= 100;
-
-    //if (x + y + theta >= 3) {
-
-    //some of these +'s and -'s will need to be changed when the wheels are flipped around
-    frontLeftA.spin(directionType::fwd, y + x + theta, velocityUnits::pct); 
-    frontLeftB.spin(directionType::fwd, y + x + theta, velocityUnits::pct);
-
-    backRightA.spin(directionType::fwd,  y + x - theta, velocityUnits::pct);
-    backRightB.spin(directionType::fwd,  y + x - theta, velocityUnits::pct);
-
-    frontRightA.spin(directionType::fwd, y - x - theta, velocityUnits::pct);
-    frontRightB.spin(directionType::fwd, y - x - theta, velocityUnits::pct);
-
-    backLeftA.spin(directionType::fwd,  y - x + theta, velocityUnits::pct);
-    backLeftB.spin(directionType::fwd,  y - x + theta, velocityUnits::pct);
-    //}
-  }
 
 
 int main() {
@@ -132,9 +96,6 @@ int main() {
 
   // Prevent main from exiting with an infinite loop.
   while (true) {
-    // 8 motor 4 WHEEL mechanum drive
-    
-    drive(Controller1.Axis3.value(), Controller1.Axis4.value(), Controller1.Axis1.value());
 
     wait(10, msec);
   }
