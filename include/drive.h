@@ -6,8 +6,7 @@
 class Drive {
         
     private:
-        const double deadzone = 0.1;
-        const double rcwScale = 0.5;
+        const double deadzone = 5; // from 0 to 100
 
         double originHeading;
         double originCorr;

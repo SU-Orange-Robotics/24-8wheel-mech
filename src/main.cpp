@@ -27,7 +27,18 @@ void pre_auton(void) {
 
   // All activities that occur before the competition starts
   // Example: clearing encoders, setting servo positions, ...
-  IMU.calibrate();
+
+  backLeftA.setStopping(brakeType::brake);
+  backLeftB.setStopping(brakeType::brake);
+
+  backRightA.setStopping(brakeType::brake);
+  backRightB.setStopping(brakeType::brake);
+
+  frontLeftA.setStopping(brakeType::brake);
+  frontLeftB.setStopping(brakeType::brake);
+  
+  frontRightA.setStopping(brakeType::brake);
+  frontRightB.setStopping(brakeType::brake);
 
 }
 
@@ -59,6 +70,10 @@ void autonomous(void) {
 
 void usercontrol(void) {
   // User control code here, inside the loop
+
+  // use this if we have calibration issues. make sure it prevents driver control for at least 2 seconds
+  //IMU.calibrate(2000);
+
   while (1) {
     // This is the main execution loop for the user control program.
     // Each time through the loop your program should update motor + servo
@@ -68,8 +83,6 @@ void usercontrol(void) {
     // Insert user code here. This is where you use the joystick values to
     // update your motors, etc.
     // ........................................................................
-    // 8 motor 4 WHEEL mechanum drive
-    drive.drive(Controller1.Axis3.value(), Controller1.Axis4.value(), Controller1.Axis1.value());
 
 
     wait(20, msec); // Sleep the task for a short amount of time to
@@ -92,6 +105,10 @@ int main() {
 
   // Prevent main from exiting with an infinite loop.
   while (true) {
+
+    // 8 motor 4 WHEEL mechanum drive
+    drive.drive(Controller1.Axis3.position(), Controller1.Axis4.position(), Controller1.Axis1.position());
+
 
     wait(10, msec);
   }

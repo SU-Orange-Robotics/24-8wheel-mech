@@ -8,28 +8,29 @@ Drive::Drive() {
     originCorr = 0;
     originHeading = IMU.heading();
     invertDrive = false;
-    relativeDrive = true;
+    relativeDrive = false;
 }
 
-void Drive::drive(double y, double x, double theta) {
+void Drive::drive(double fwd, double str, double theta) {
 
-    inputAdjust(y, x, theta);
+    //inputAdjust(fwd, str, theta);
 
-    fieldRelativize(y, x, theta);
+    //fieldRelativize(fwd, str, theta);
+    theta /= 2; //temporary
 
     //some of these +'s and -'s will need to be changed when the wheels are flipped around
-    frontLeftA.spin(directionType::fwd, y + x + theta, velocityUnits::pct); 
-    frontLeftB.spin(directionType::fwd, y + x + theta, velocityUnits::pct);
+    frontLeftA.spin(directionType::fwd, fwd + str + theta, velocityUnits::pct); 
+    frontLeftB.spin(directionType::fwd, fwd + str + theta, velocityUnits::pct);
 
-    backRightA.spin(directionType::fwd, y + x - theta, velocityUnits::pct);
-    backRightB.spin(directionType::fwd, y + x - theta, velocityUnits::pct);
+    backLeftA.spin(directionType::fwd, fwd - str + theta, velocityUnits::pct);
+    backLeftB.spin(directionType::fwd, fwd - str + theta, velocityUnits::pct);
 
-    frontRightA.spin(directionType::fwd, y - x - theta, velocityUnits::pct);
-    frontRightB.spin(directionType::fwd, y - x - theta, velocityUnits::pct);
+    frontRightA.spin(directionType::fwd, fwd - str - theta, velocityUnits::pct);
+    frontRightB.spin(directionType::fwd, fwd - str - theta, velocityUnits::pct);
 
-    backLeftA.spin(directionType::fwd, y - x + theta, velocityUnits::pct);
-    backLeftB.spin(directionType::fwd, y - x + theta, velocityUnits::pct);
-    
+    backRightA.spin(directionType::fwd, fwd + str - theta, velocityUnits::pct);
+    backRightB.spin(directionType::fwd, fwd + str - theta, velocityUnits::pct);
+
 }
 
 void Drive::inputAdjust(double &fwd, double &str, double &theta) {
@@ -48,8 +49,8 @@ void Drive::inputAdjust(double &fwd, double &str, double &theta) {
     */
 
     fwd *= 100;
-    str *= 50; // effectively halves max turning values
-    theta *= 100;
+    str *= 100; 
+    theta *= 50; // rcwScale reduces the max turning input
 
     //if statement to invert control direction
     if (invertDrive) {
