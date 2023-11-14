@@ -20,5 +20,6 @@ extern motor backRightB;
 
 extern controller Controller1;
 extern inertial IMU;
+extern gps gps1;
 
 extern Drive drive;

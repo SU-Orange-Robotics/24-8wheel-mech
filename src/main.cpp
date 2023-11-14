@@ -39,7 +39,21 @@ void pre_auton(void) {
   
   frontRightA.setStopping(brakeType::brake);
   frontRightB.setStopping(brakeType::brake);
+  
+  double maxCurrent = 2.2; //hardware maximum current is 2.5A
 
+  backLeftA.setMaxTorque(maxCurrent, currentUnits::amp);
+  backLeftB.setMaxTorque(maxCurrent, currentUnits::amp);
+
+  backRightA.setMaxTorque(maxCurrent, currentUnits::amp);
+  backRightB.setMaxTorque(maxCurrent, currentUnits::amp);
+
+  frontLeftA.setMaxTorque(maxCurrent, currentUnits::amp);
+  frontLeftB.setMaxTorque(maxCurrent, currentUnits::amp);
+  
+  frontRightA.setMaxTorque(maxCurrent, currentUnits::amp);
+  frontRightB.setMaxTorque(maxCurrent, currentUnits::amp);
+  
 }
 
 /*---------------------------------------------------------------------------*/
