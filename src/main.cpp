@@ -163,7 +163,7 @@ void usercontrol(void) {
     });
 
     Controller1.ButtonR2.pressed([](){
-      catapultArm(true);
+      catapultArm();
     });
 
     Controller1.ButtonR2.released([](){

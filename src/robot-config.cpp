@@ -18,7 +18,7 @@ motor backLeft(PORT3, gearSetting::ratio18_1, false);
 
 motor backRight(PORT2, gearSetting::ratio18_1, true);
 
-motor intake(PORT7, gearSetting::ratio18_1, false);
+motor intake(PORT7, gearSetting::ratio18_1, true);
 
 motor catapultA(PORT1, gearSetting::ratio36_1, false);
 motor catapultB(PORT10, gearSetting::ratio36_1, false);

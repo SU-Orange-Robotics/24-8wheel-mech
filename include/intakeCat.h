@@ -9,6 +9,6 @@ void intakeSpin(bool reversed = false);
 
 void intakeStop();
 
-void catapultArm(bool reversed = false);
+void catapultArm();
 
 void catapultStop();

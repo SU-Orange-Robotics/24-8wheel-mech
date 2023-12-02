@@ -12,11 +12,10 @@ void intakeStop() {
     intake.stop();
 }
 
-void catapultArm(bool reversed) {
-    double pow = catPow * (reversed ? -1 : 1);
-    catapultA.spin(directionType::fwd, pow, percentUnits::pct);
-    catapultB.spin(directionType::fwd, pow, percentUnits::pct);
-    catapultC.spin(directionType::fwd, pow, percentUnits::pct);
+void catapultArm() {
+    catapultA.spin(directionType::fwd, catPow, percentUnits::pct);
+    catapultB.spin(directionType::fwd, catPow, percentUnits::pct);
+    catapultC.spin(directionType::fwd, catPow, percentUnits::pct);
 }
 
 void catapultStop() {
