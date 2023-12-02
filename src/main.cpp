@@ -10,6 +10,7 @@
 #include "vex.h"
 #include "drive.h"
 #include "robot-config.h"
+#include "intakeCat.h"
 
 using namespace vex;
 
@@ -28,32 +29,25 @@ void pre_auton(void) {
   // All activities that occur before the competition starts
   // Example: clearing encoders, setting servo positions, ...
 
-  backLeftA.setStopping(brakeType::brake);
-  backLeftB.setStopping(brakeType::brake);
-
-  backRightA.setStopping(brakeType::brake);
-  backRightB.setStopping(brakeType::brake);
-
-  frontLeftA.setStopping(brakeType::brake);
-  frontLeftB.setStopping(brakeType::brake);
-  
-  frontRightA.setStopping(brakeType::brake);
-  frontRightB.setStopping(brakeType::brake);
+  backLeft.setStopping(brakeType::brake);
+  backRight.setStopping(brakeType::brake);
+  frontLeft.setStopping(brakeType::brake);
+  frontRight.setStopping(brakeType::brake);
   
   double maxCurrent = 2.2; //hardware maximum current is 2.5A
 
-  backLeftA.setMaxTorque(maxCurrent, currentUnits::amp);
-  backLeftB.setMaxTorque(maxCurrent, currentUnits::amp);
+  backLeft.setMaxTorque(maxCurrent, currentUnits::amp);
+  backRight.setMaxTorque(maxCurrent, currentUnits::amp);
+  frontLeft.setMaxTorque(maxCurrent, currentUnits::amp);
+  frontRight.setMaxTorque(maxCurrent, currentUnits::amp);
 
-  backRightA.setMaxTorque(maxCurrent, currentUnits::amp);
-  backRightB.setMaxTorque(maxCurrent, currentUnits::amp);
 
-  frontLeftA.setMaxTorque(maxCurrent, currentUnits::amp);
-  frontLeftB.setMaxTorque(maxCurrent, currentUnits::amp);
-  
-  frontRightA.setMaxTorque(maxCurrent, currentUnits::amp);
-  frontRightB.setMaxTorque(maxCurrent, currentUnits::amp);
-  
+  catapultA.setStopping(brakeType::brake);
+  catapultB.setStopping(brakeType::brake);
+  catapultC.setStopping(brakeType::brake);
+
+  intake.setStopping(brakeType::brake);
+
 }
 
 /*---------------------------------------------------------------------------*/
@@ -70,6 +64,45 @@ void autonomous(void) {
   // ..........................................................................
   // Insert autonomous user code here.
   // ..........................................................................
+
+  /*
+  drive.driveForward(100);
+  wait(0.6, sec);
+  drive.stop();
+  wait(1, sec);
+
+  //drive.goToPointPID(0, 1000);
+  */
+  //drive.turnAndDrivePID(0, 1000);
+  
+  /*
+  drive.turnPID(0);
+
+  wait(1, sec);
+
+  drive.turnPID(M_PI);
+
+  wait(1, sec);
+
+  drive.turnPID(M_PI / 2);
+
+  wait(1, sec);
+
+  drive.turnPID(5 * M_PI / 6);*/
+
+
+  drive.driveForward(-100);
+  wait(650, msec);
+  drive.stop();
+
+  drive.turnPID((M_PI / 4) + 0.2);
+  drive.driveForward(100);
+  wait(700, msec);
+  drive.stop();
+
+  intakeSpin(100);
+
+
 }
 
 /*---------------------------------------------------------------------------*/
@@ -98,6 +131,47 @@ void usercontrol(void) {
     // update your motors, etc.
     // ........................................................................
 
+    // 8 motor 4 WHEEL mechanum drive
+    drive.drive(Controller1.Axis3.position(), Controller1.Axis4.position(), Controller1.Axis1.position());
+
+
+    //intake
+    Controller1.ButtonL1.pressed([](){
+      intakeSpin();
+    });
+
+    Controller1.ButtonL1.released([](){
+      intakeStop();
+    });
+
+    Controller1.ButtonL2.pressed([](){
+      intakeSpin(true);
+    });
+
+    Controller1.ButtonL2.released([](){
+      intakeStop();
+    });
+
+
+    // catapult
+    Controller1.ButtonR1.pressed([](){
+      catapultArm();
+    });
+
+    Controller1.ButtonR1.released([](){
+      catapultStop();
+    });
+
+    Controller1.ButtonR2.pressed([](){
+      catapultArm(true);
+    });
+
+    Controller1.ButtonR2.released([](){
+      catapultStop();
+    });
+
+
+
 
     wait(20, msec); // Sleep the task for a short amount of time to
                     // prevent wasted resources.
@@ -119,11 +193,18 @@ int main() {
 
   // Prevent main from exiting with an infinite loop.
   while (true) {
+    //Controller1.Screen.clearScreen();
+    Controller1.Screen.setCursor(1,1);
+    Controller1.Screen.print(drive.gpsHeadingRad());
+    Controller1.Screen.setCursor(1,10);
+    Controller1.Screen.print(drive.gpsAngleRad());
+    Controller1.Screen.setCursor(2,1);
+    Controller1.Screen.print(gps1.xPosition());
+    Controller1.Screen.setCursor(3,1);
+    Controller1.Screen.print(gps1.yPosition());
+    Controller1.Screen.setCursor(2,12);
+    Controller1.Screen.print(drive.getAngleToPoint(0, 1000));
 
-    // 8 motor 4 WHEEL mechanum drive
-    drive.drive(Controller1.Axis3.position(), Controller1.Axis4.position(), Controller1.Axis1.position());
-
-
-    wait(10, msec);
+    wait(20, msec);
   }
 }

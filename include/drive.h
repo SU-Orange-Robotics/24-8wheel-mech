@@ -7,7 +7,7 @@ class Drive {
         
     private:
         const double deadzone = 10; // from 0 to 100
-        const double maxOutputPct = 75; // limits maximum motor output percentage
+        const double maxOutputPct = 90; // limits maximum motor output percentage
 
         double originHeading;
         double originCorr;
@@ -26,10 +26,6 @@ class Drive {
             return (fabs(input) <= max ? input : max * (input / fabs(input)));
         }
 
-        static double headingRad() {
-            return toRadians(gps1.heading());
-        }
-
         void inputAdjust(double &fwd, double &str, double &theta);
 
         void fieldRelativize(double &fwd, double &str, double &theta);
@@ -37,12 +33,12 @@ class Drive {
 
         bool activePID;
 
-        const double a_P = 50;  //50
+        const double a_P = 30;  //50
         const double a_I = 0;   //0
-        const double a_D = 0.2; //0.1
+        const double a_D = 0.4; //0.1
         vex::timer pid_timer;
 
-        const double d_P = 3.0;
+        const double d_P = 1.0;
         const double d_D = 3.0;
         const double d_I = 0.00;
         vex::timer pid_timer2;
@@ -51,7 +47,7 @@ class Drive {
 
         double getAngleError(double target);
 
-        double getAngleToPoint(double x2, double y2);
+        
 
         double getDistanceError(double targetX, double targetY, int count);
 
@@ -72,6 +68,16 @@ class Drive {
 
         void stop();
 
+        double gpsHeadingRad();
+
+        double gpsAngleRad();
+
+
+
+        double getAngleToPoint(double x2, double y2);
+
+
+
         void driveForward(double fwd);
 
         void adjustRight(double speed);
@@ -83,5 +89,9 @@ class Drive {
         void turnToPoint(double targetX, double targetY, bool flipped = false);
 
         void turnAndDrivePID(double targetX, double targetY);
+
+        bool pidActive() {
+            return activePID;
+        }
 
 };

@@ -20,17 +20,13 @@ void Drive::drive(double fwd, double str, double theta) {
     //theta /= 2; //temporary
 
     //some of these +'s and -'s will need to be changed when the wheels are flipped around
-    frontLeftA.spin(directionType::fwd, maxClamp(fwd + str + theta, maxOutputPct), velocityUnits::pct); 
-    frontLeftB.spin(directionType::fwd, maxClamp(fwd + str + theta, maxOutputPct), velocityUnits::pct);
+    frontLeft.spin(directionType::fwd, maxClamp(fwd + str + theta, maxOutputPct), velocityUnits::pct); 
 
-    backLeftA.spin(directionType::fwd, maxClamp(fwd - str + theta, maxOutputPct), velocityUnits::pct);
-    backLeftB.spin(directionType::fwd, maxClamp(fwd - str + theta, maxOutputPct), velocityUnits::pct);
+    backLeft.spin(directionType::fwd, maxClamp(fwd - str + theta, maxOutputPct), velocityUnits::pct);
 
-    frontRightA.spin(directionType::fwd, maxClamp(fwd - str - theta, maxOutputPct), velocityUnits::pct);
-    frontRightB.spin(directionType::fwd, maxClamp(fwd - str - theta, maxOutputPct), velocityUnits::pct);
+    frontRight.spin(directionType::fwd, maxClamp(fwd - str - theta, maxOutputPct), velocityUnits::pct);
 
-    backRightA.spin(directionType::fwd, maxClamp(fwd + str - theta, maxOutputPct), velocityUnits::pct);
-    backRightB.spin(directionType::fwd, maxClamp(fwd + str - theta, maxOutputPct), velocityUnits::pct);
+    backRight.spin(directionType::fwd, maxClamp(fwd + str - theta, maxOutputPct), velocityUnits::pct);
 
 }
 
@@ -78,25 +74,35 @@ void Drive::resetHeading() {
 }
 
 void Drive::stop() {
-    frontLeftA.stop();
-    frontRightA.stop();
-    backLeftA.stop();
-    backRightA.stop();
+    frontLeft.stop();
+    frontRight.stop();
+    backLeft.stop();
+    backRight.stop();
+}
+
+double Drive::gpsHeadingRad() {
+    double radHeading = (-1 * gps1.heading() * M_PI / 180);
+    return radHeading += (radHeading < -1 * M_PI ? 2 * M_PI : 0);
+}
+
+double Drive::gpsAngleRad() {
+    double radAngle = (-1 * gps1.rotation() * M_PI / 180);
+    return radAngle += (radAngle < -1 * M_PI ? 2 * M_PI : 0);
 }
 
 void Drive::driveForward(double fwd) {
     fwd = maxClamp(fwd, maxOutputPct);
-    frontLeftA.spin(directionType::fwd, fwd, velocityUnits::pct);
-    frontRightA.spin(directionType::fwd, fwd, velocityUnits::pct);
-    backLeftA.spin(directionType::fwd, fwd, velocityUnits::pct);
-    backRightA.spin(directionType::fwd, fwd, velocityUnits::pct);
+    frontLeft.spin(directionType::fwd, fwd, velocityUnits::pct);
+    frontRight.spin(directionType::fwd, fwd, velocityUnits::pct);
+    backLeft.spin(directionType::fwd, fwd, velocityUnits::pct);
+    backRight.spin(directionType::fwd, fwd, velocityUnits::pct);
 }
 
 void Drive::adjustRight(double speed) {
-    frontLeftA.spin(directionType::fwd, -speed, velocityUnits::pct);
-    frontRightA.spin(directionType::fwd, speed, velocityUnits::pct);
-    backLeftA.spin(directionType::fwd, speed, velocityUnits::pct);
-    backRightA.spin(directionType::fwd, -speed, velocityUnits::pct);
+    frontLeft.spin(directionType::fwd, speed, velocityUnits::pct);
+    frontRight.spin(directionType::fwd, -speed, velocityUnits::pct);
+    backLeft.spin(directionType::fwd, speed, velocityUnits::pct);
+    backRight.spin(directionType::fwd, -speed, velocityUnits::pct);
     // wait(0.5, sec);
     // stop();
 }
@@ -106,9 +112,9 @@ void Drive::adjustRight(double speed) {
 // ========================================================= //
 
 double Drive::getAngleErrorOLD(double target) {
-    double currAngle = toRadians(gps1.heading());
-    double currHeading = fmod(currAngle, 2*M_PI); // gets angle and then restricts it to a fixed range
-    if (abs(currHeading) > M_PI) { //converts a (0 to 2pi) value to a (-pi to pi) value
+    double currAngle = toRadians(-1 * gps1.rotation());
+    double currHeading = toRadians(-1 * gps1.heading()); //fmod(currAngle, 2*M_PI); // gets angle and then restricts it to a fixed range
+    if (fabs(currHeading) > M_PI) { //converts a (0 to 2pi) value to a (-pi to pi) value
         currHeading += (2 * M_PI) * (currHeading > 0 ? -1 : 1);
     }
     double error = target - currHeading; //ccw positive
@@ -123,14 +129,14 @@ double Drive::getAngleErrorOLD(double target) {
         }
     }*/
 
-    if (error > M_PI) { //chech smaller target
+    if (error > M_PI) { //check smaller target
         double error2 = (target - 2*M_PI) - currHeading;
-        if (abs(error) > abs(error2)) {
+        if (fabs(error) > fabs(error2)) {
             error = error2;
         }
     } else if (error < -1*M_PI) { //check larger target
         double error2 = (target + 2*M_PI) - currHeading;
-        if (abs(error) > abs(error2)) {
+        if (fabs(error) > fabs(error2)) {
             error = error2;
         }
     }
@@ -139,7 +145,7 @@ double Drive::getAngleErrorOLD(double target) {
 }
 
 double Drive::getAngleError(double target) {
-    double currAngle = toRadians(gps1.heading());
+    double currAngle = toRadians(-1 * gps1.heading());
     int rotations = floor(currAngle / (2*M_PI));
     rotations += rotations < 0 ? 1 : 0;
 
@@ -147,7 +153,7 @@ double Drive::getAngleError(double target) {
     double error1 = currAngle - trueTarget1;
 
     double error2;
-    if (abs(error1) > M_PI && error1 != 0) {
+    if (fabs(error1) > M_PI && error1 != 0) {
         error2 = error1 + (2*M_PI * error1 > 0 ? -1 : 1); //positive error --> subtract a rotation, negative error --> add a rotation
     } else {
         error2 = error1;
@@ -183,7 +189,7 @@ void Drive::turnPID(double targetHeading) {
 
         adjustRight(output);
 
-        if (abs(error) < 0.02 && abs((error-errorLast)/dt) < 0.02) {
+        if (fabs(error) < 0.02 && fabs((error-errorLast)/dt) < 0.02) {
             break;
         }
     }
@@ -202,20 +208,20 @@ void turnToHeading(double targetHeading) {
 }*/
 
 double Drive::getAngleToPoint(double x2, double y2) {
-    double x1 = gps1.xPosition(vex::distanceUnits::in);
-    double y1 = gps1.yPosition(vex::distanceUnits::in);
+    double x1 = gps1.xPosition(vex::distanceUnits::mm);
+    double y1 = gps1.yPosition(vex::distanceUnits::mm);
 
     double theta = atan2(y2 - y1, x2 - x1);
 
-    return theta;
+    return theta + M_PI / 2;
 }
   
 // find error between target point, and current point
-double Drive::getDistanceError(double targetX, double targetY, int count) {
+double Drive::getDistanceError(double targetX, double targetY, int count = 0) {
 
     // get current x, and y position
-    double currentX = gps1.xPosition(vex::distanceUnits::in);
-    double currentY = gps1.yPosition(vex::distanceUnits::in);
+    double currentX = gps1.xPosition(vex::distanceUnits::mm);
+    double currentY = gps1.yPosition(vex::distanceUnits::mm);
 
     // find the distance between the targets, and currents 
     double errorX = targetX - currentX;
@@ -231,7 +237,7 @@ double Drive::getDistanceError(double targetX, double targetY, int count) {
     // accounts for the angle always being positive by making it negative if the robot is facing away from the target point
     double currAngle = fmod(toRadians(gps1.rotation()), 2*M_PI);
     currAngle += currAngle < 0 ? 2*M_PI : 0;
-    double angleDifference = abs(getAngleToPoint(targetX, targetY) - currAngle);
+    double angleDifference = fabs(getAngleToPoint(targetX, targetY) - currAngle);
     errorTan *= (angleDifference < M_PI/2 || angleDifference > 3*M_PI/2) ? 1 : -1;
     //errorTan *= abs(getAngleToPoint(targetX, targetY) - fmod(gps.getTheta(), 2*M_PI)) < M_PI/2 ? 1 : -1; // angle from where robot is facing to angle towards desired location
     
@@ -243,8 +249,8 @@ double Drive::getDistanceError(double targetX, double targetY, int count) {
 
 // function to go to a point using PID
 void Drive::goToPointPID(double targetX, double targetY) {
-    double currentX = gps1.xPosition(vex::distanceUnits::in);
-    double currentY = gps1.yPosition(vex::distanceUnits::in);
+    //double currentX = gps1.xPosition(vex::distanceUnits::mm);
+    //double currentY = gps1.yPosition(vex::distanceUnits::mm);
 
     double error = 0;
     double errorLast;
@@ -253,12 +259,12 @@ void Drive::goToPointPID(double targetX, double targetY) {
     double integrationStored = 0;
     pid_timer2.reset();
 
-    int count = 0;
+    //int count = 0;
   
     while(true){
         activePID = true;
         errorLast = error;
-        error = getDistanceError(targetX, targetY, count++);
+        error = getDistanceError(targetX, targetY);
         dt = pid_timer2.time() - lastTime;
       
         double P_comp = d_P * error;
@@ -275,7 +281,7 @@ void Drive::goToPointPID(double targetX, double targetY) {
 
         driveForward(output);
 
-        if (abs(error) < 0.2 && abs(error-errorLast) / dt) {
+        if (fabs(error) < 0.2 && fabs(error-errorLast) / dt) {
             break;
         }
     }
@@ -283,7 +289,7 @@ void Drive::goToPointPID(double targetX, double targetY) {
     stop();
 }
 
-void Drive::turnToPoint(double targetX, double targetY, bool flipped = false) {
+void Drive::turnToPoint(double targetX, double targetY, bool flipped) {
     double theta = getAngleToPoint(targetX, targetY);
     if (flipped) {
         theta += M_PI * (theta <= 0 ? 1 : -1);

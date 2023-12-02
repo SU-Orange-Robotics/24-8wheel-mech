@@ -10,20 +10,25 @@ competition Competition;
 // define your global instances of motors and other devices here
 
 // 8 motor 4 WHEEL mechanum drive
-motor frontLeftA(PORT2, gearSetting::ratio6_1, false);
-motor frontLeftB(PORT3, gearSetting::ratio6_1, false);
+motor frontLeft(PORT20, gearSetting::ratio18_1, true);
 
-motor frontRightA(PORT9, gearSetting::ratio6_1, true);
-motor frontRightB(PORT10, gearSetting::ratio6_1, true);
+motor frontRight(PORT11, gearSetting::ratio18_1, false);
 
-motor backLeftA(PORT15, gearSetting::ratio6_1, false);
-motor backLeftB(PORT16, gearSetting::ratio6_1, false);
+motor backLeft(PORT3, gearSetting::ratio18_1, false);
 
-motor backRightA(PORT6, gearSetting::ratio6_1, true);
-motor backRightB(PORT5, gearSetting::ratio6_1, true);
+motor backRight(PORT2, gearSetting::ratio18_1, true);
+
+motor intake(PORT7, gearSetting::ratio18_1, false);
+
+motor catapultA(PORT1, gearSetting::ratio36_1, false);
+motor catapultB(PORT10, gearSetting::ratio36_1, false);
+motor catapultC(PORT9, gearSetting::ratio36_1, true);
+
+rotation catapultRot(PORT8, false);
 
 controller Controller1(controllerType::primary);
-inertial IMU(PORT21);
+inertial IMU(PORT5);
+gps gps1(PORT19, 0, 0, distanceUnits::mm, 180); // port, x, y, distance units, angle offset, turn direction?
 
 // declare object-oriented stuff here (that should be globally accessible)
 Drive drive;
