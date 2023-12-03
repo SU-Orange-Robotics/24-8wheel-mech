@@ -33,7 +33,7 @@ class Drive {
 
         bool activePID;
 
-        const double a_P = 30;  //50
+        const double a_P = 45;  //50
         const double a_I = 0;   //0
         const double a_D = 0.4; //0.1
         vex::timer pid_timer;
