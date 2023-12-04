@@ -98,11 +98,11 @@ void Drive::driveForward(double fwd) {
     backRight.spin(directionType::fwd, fwd, velocityUnits::pct);
 }
 
-void Drive::adjustRight(double speed) {
-    frontLeft.spin(directionType::fwd, speed, velocityUnits::pct);
-    frontRight.spin(directionType::fwd, -speed, velocityUnits::pct);
-    backLeft.spin(directionType::fwd, speed, velocityUnits::pct);
-    backRight.spin(directionType::fwd, -speed, velocityUnits::pct);
+void Drive::adjustCCW(double speed) {
+    frontLeft.spin(directionType::fwd, -speed, velocityUnits::pct);
+    frontRight.spin(directionType::fwd, speed, velocityUnits::pct);
+    backLeft.spin(directionType::fwd, -speed, velocityUnits::pct);
+    backRight.spin(directionType::fwd, speed, velocityUnits::pct);
     // wait(0.5, sec);
     // stop();
 }
@@ -112,22 +112,12 @@ void Drive::adjustRight(double speed) {
 // ========================================================= //
 
 double Drive::getAngleErrorOLD(double target) {
-    double currAngle = toRadians(-1 * gps1.rotation());
+    //double currAngle = toRadians(-1 * gps1.rotation());
     double currHeading = toRadians(-1 * gps1.heading()); //fmod(currAngle, 2*M_PI); // gets angle and then restricts it to a fixed range
     if (fabs(currHeading) > M_PI) { //converts a (0 to 2pi) value to a (-pi to pi) value
         currHeading += (2 * M_PI) * (currHeading > 0 ? -1 : 1);
     }
     double error = target - currHeading; //ccw positive
-    /*
-    if (abs(error) > M_PI) {
-        double error2 = (target + 2*M_PI) - currHeading;
-        double error3 = (target - 2*M_PI) - currHeading;
-        if (abs(error) > abs(error2)) {
-            error = error2;
-        } else if (abs(error) > abs(error3)) {
-            error = error3;
-        }
-    }*/
 
     if (error > M_PI) { //check smaller target
         double error2 = (target - 2*M_PI) - currHeading;
@@ -145,21 +135,14 @@ double Drive::getAngleErrorOLD(double target) {
 }
 
 double Drive::getAngleError(double target) {
-    double currAngle = toRadians(-1 * gps1.heading());
-    int rotations = floor(currAngle / (2*M_PI));
-    rotations += rotations < 0 ? 1 : 0;
+    double currHeading = toRadians(-1 * gps1.heading());
+    double error = currHeading - target; //ccw positive
 
-    double trueTarget1 = target + (rotations * (2*M_PI));
-    double error1 = currAngle - trueTarget1;
-
-    double error2;
-    if (fabs(error1) > M_PI && error1 != 0) {
-        error2 = error1 + (2*M_PI * error1 > 0 ? -1 : 1); //positive error --> subtract a rotation, negative error --> add a rotation
-    } else {
-        error2 = error1;
+    if (fabs(error) > M_PI) { //converts a (0 to 2pi) value to a (-pi to pi) value
+        error += (2*M_PI) * (error > 0 ? -1 : 1);
     }
     
-    return error2;
+    return error;
 }
 
 void Drive::turnPID(double targetHeading) {
@@ -187,7 +170,7 @@ void Drive::turnPID(double targetHeading) {
 
         double output = P_comp + I_comp + D_comp;
 
-        adjustRight(output);
+        adjustCCW(output);
 
         if (fabs(error) < 0.02 && fabs((error-errorLast)/dt) < 0.02) {
             break;
@@ -213,7 +196,7 @@ double Drive::getAngleToPoint(double x2, double y2) {
 
     double theta = atan2(y2 - y1, x2 - x1);
 
-    return theta + M_PI / 2;
+    return theta + M_PI / 2; //addition is because theta is 90 deg off????
 }
   
 // find error between target point, and current point
