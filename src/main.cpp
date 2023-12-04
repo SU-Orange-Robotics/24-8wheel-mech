@@ -95,13 +95,39 @@ void autonomous(void) {
   wait(650, msec);
   drive.stop();
 
-  drive.turnPID((M_PI / 4) + 0.2);
+  //catapultArm();
+
+  drive.turnPID((-1 * M_PI / 4) + 0.0);
   drive.driveForward(100);
-  wait(700, msec);
+  wait(800, msec);
   drive.stop();
 
-  intakeSpin(100);
+  intakeSpin();
 
+  int i;
+  for (i = 0; i < 6; i++) {
+    //reverse away from bar for match load
+    drive.driveForward(-100);
+    wait(400, msec);
+    drive.stop();
+
+    catapultLaunch();
+    wait(500, msec);
+    catapultArm();
+
+    // give time for match load to be loaded (in addition to catapult arm time) and allow for 
+    drive.turnPID((-1 * M_PI / 4) + 0.0);
+    wait(500, msec);
+
+    //drive forward into bar
+    drive.driveForward(100);
+    wait(480, msec);
+    drive.stop();
+
+    //give time for ball to get into catapult
+    wait(300, msec);
+  }
+  catapultLaunch();
 
 }
 
@@ -155,21 +181,33 @@ void usercontrol(void) {
 
     // catapult
     Controller1.ButtonR1.pressed([](){
+      catapultLaunch();
+      wait(500, msec);
       catapultArm();
     });
 
     Controller1.ButtonR1.released([](){
-      catapultStop();
+      //catapultStop();
     });
 
     Controller1.ButtonR2.pressed([](){
-      catapultArm();
+      if (!catInPosArmed()) {
+        catapultArm();
+      }
     });
 
     Controller1.ButtonR2.released([](){
-      catapultStop();
+      //catapultStop();
+    });
+    
+    Controller1.ButtonDown.pressed([](){
+      catapultLower();
     });
 
+    Controller1.ButtonDown.released([](){
+      stopAutoArming();
+      catapultStop();
+    });
 
 
 
@@ -203,7 +241,8 @@ int main() {
     Controller1.Screen.setCursor(3,1);
     Controller1.Screen.print(gps1.yPosition());
     Controller1.Screen.setCursor(2,12);
-    Controller1.Screen.print(drive.getAngleToPoint(0, 1000));
+    //Controller1.Screen.print(drive.getAngleToPoint(0, 1000));
+    Controller1.Screen.print(catapultRot.angle());
 
     wait(20, msec);
   }

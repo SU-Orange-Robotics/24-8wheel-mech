@@ -33,9 +33,9 @@ class Drive {
 
         bool activePID;
 
-        const double a_P = 30;  //50
+        const double a_P = 50;  //50
         const double a_I = 0;   //0
-        const double a_D = 0.4; //0.1
+        const double a_D = 0.3; //0.1
         vex::timer pid_timer;
 
         const double d_P = 1.0;
@@ -73,14 +73,14 @@ class Drive {
         double gpsAngleRad();
 
 
-
+        // make this private at some point, it is only public for debugging purposes on the controller display
         double getAngleToPoint(double x2, double y2);
 
 
 
         void driveForward(double fwd);
 
-        void adjustRight(double speed);
+        void adjustCCW(double speed);
 
         void turnPID(double targetHeading);
 

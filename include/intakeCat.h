@@ -3,12 +3,22 @@
 #pragma once
 
 const double intakePow = 100;
-const double catPow = 50;
+const double catPow = 35;
+
+void stopAutoArming();
 
 void intakeSpin(bool reversed = false);
 
 void intakeStop();
 
+void catapultLower();
+
 void catapultArm();
 
+void catapultLaunch();
+
 void catapultStop();
+
+bool catInPosArmed();
+
+bool catInPosShoot();
