@@ -131,7 +131,7 @@ double Drive::getAngleErrorOLD(double target) {
         }
     }
     
-    return error * -1; //convert to ccw negative
+    return error; //convert to ccw negative
 }
 
 double Drive::getAngleError(double target) {
