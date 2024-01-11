@@ -41,6 +41,16 @@ void catapultLaunch() {
     catapultStop();
 }
 
+void catapultLaunch2() {
+    catapultA.setStopping(brakeType::coast);
+    catapultB.setStopping(brakeType::coast);
+    catapultC.setStopping(brakeType::coast);
+    waitUntil(catInPosShoot());
+    catapultA.setStopping(brakeType::hold);
+    catapultB.setStopping(brakeType::hold);
+    catapultC.setStopping(brakeType::hold);
+}
+
 bool catInPosArmed() {
     double posA1 = 197, posA2 = 200;//197.57, 197.75
 

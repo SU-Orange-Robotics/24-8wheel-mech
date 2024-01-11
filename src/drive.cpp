@@ -131,12 +131,12 @@ double Drive::getAngleErrorOLD(double target) {
         }
     }
     
-    return error * -1; //convert to ccw negative
+    return error;
 }
 
 double Drive::getAngleError(double target) {
     double currHeading = toRadians(-1 * gps1.heading());
-    double error = currHeading - target; //ccw positive
+    double error = target - currHeading; //ccw positive
 
     if (fabs(error) > M_PI) { //converts a (0 to 2pi) value to a (-pi to pi) value
         error += (2*M_PI) * (error > 0 ? -1 : 1);
@@ -155,7 +155,7 @@ void Drive::turnPID(double targetHeading) {
     while(true) {
         activePID = true;
         errorLast = error;
-        error = getAngleErrorOLD(targetHeading);
+        error = getAngleError(targetHeading);
         dt = pid_timer.time() - lastTime;
 
         double P_comp = a_P * error;
