@@ -17,8 +17,12 @@ void catapultArm();
 
 void catapultLaunch();
 
+void catapultLaunch2();
+
 void catapultStop();
 
 bool catInPosArmed();
 
 bool catInPosShoot();
+
+bool catShooted();

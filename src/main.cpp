@@ -42,9 +42,9 @@ void pre_auton(void) {
   frontRight.setMaxTorque(maxCurrent, currentUnits::amp);
 
 
-  catapultA.setStopping(brakeType::brake);
-  catapultB.setStopping(brakeType::brake);
-  catapultC.setStopping(brakeType::brake);
+  catapultA.setStopping(brakeType::hold);
+  catapultB.setStopping(brakeType::hold);
+  catapultC.setStopping(brakeType::hold);
 
   intake.setStopping(brakeType::brake);
 

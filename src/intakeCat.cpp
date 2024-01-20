@@ -37,18 +37,29 @@ void catapultArm() {
 void catapultLaunch() {
     autoArming = true;
     catapultLower();
-    waitUntil(catInPosShoot() || !autoArming);
+    //waitUntil(catInPosShoot() || !autoArming);
+    catShooted(); //will block execution until it returns a value, which means the cat has finished shooting
     catapultStop();
 }
 
+//this didn't work, too much resistance from the motors in coast mode
 void catapultLaunch2() {
-    catapultA.setStopping(brakeType::coast);
-    catapultB.setStopping(brakeType::coast);
-    catapultC.setStopping(brakeType::coast);
-    waitUntil(catInPosShoot());
-    catapultA.setStopping(brakeType::hold);
-    catapultB.setStopping(brakeType::hold);
-    catapultC.setStopping(brakeType::hold);
+    //catapultA.setStopping(brakeType::coast);
+    //catapultB.setStopping(brakeType::coast);
+    //catapultC.setStopping(brakeType::coast);
+
+    double helpPow = 100;
+    catapultA.spin(directionType::rev, helpPow, percentUnits::pct);
+    catapultB.spin(directionType::rev, helpPow, percentUnits::pct);
+    catapultC.spin(directionType::rev, helpPow, percentUnits::pct);
+
+    wait(200, timeUnits::msec);
+    waitUntil(catShooted());
+
+    catapultStop();
+    //catapultA.setStopping(brakeType::hold);
+    //catapultB.setStopping(brakeType::hold);
+    //catapultC.setStopping(brakeType::hold);
 }
 
 bool catInPosArmed() {
@@ -67,6 +78,21 @@ bool catInPosShoot() {
     //modf(360, &currPos);
 
     return (currPos > posA1 && currPos < posA2);
+}
+
+bool catShooted() {
+    double velo;
+    double lastVelo = catapultRot.velocity(velocityUnits::dps);
+    double accl = 100;
+
+    while (accl > 2) {
+        wait(20, timeUnits::msec);
+        velo = catapultRot.velocity(velocityUnits::dps);
+        accl = (velo - lastVelo) / 0.02;
+        lastVelo = velo;
+    }
+
+    return true;
 }
 
 void stopAutoArming() {
